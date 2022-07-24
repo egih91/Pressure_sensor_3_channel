@@ -46,15 +46,17 @@ def Calculation_pressure(analog, index):
         return 'NULL'
 
 def Open_port():
-    serial.setPortName(window.comL.currentText())
-    serial.close()
-    serial.open(QIODeviceBase.OpenModeFlag.ReadWrite)
-    if serial.isOpen():
-        window.label_.setText("Порт открыт")
-    else:
-        window.label_.setText(serial.error())
-    print(serial.error())
-    print(serial.isOpen())
+    try:
+        serial.setPortName(window.comL.currentText())
+        serial.close()
+        serial.open(QIODeviceBase.OpenModeFlag.ReadWrite)
+        if serial.isOpen():
+            window.label_.setText("Порт открыт")
+        else:
+            window.label_.setText(serial.error())
+    except:
+        print(serial.error())
+
 
 def Close_port():
     serial.close()
@@ -64,19 +66,21 @@ def Close_port():
         window.label_.setText(serial.error())
 
 def Read_():
-    global data_save
-    line_ = str(serial.readLine(), 'utf-8')
-    data = line_.split(',')
-    data_save=data
-    window.sensor_1.setText(str(Calculation_pressure(data[0], 0)))
-    window.sensor_11.setText(str(Calculation_voltage(data[0], 0)))
+    try:
+        global data_save
+        line_ = str(serial.readLine(), 'utf-8')
+        data = line_.split(',')
+        data_save=data
+        window.sensor_1.setText(str(Calculation_pressure(data[0], 0)))
+        window.sensor_11.setText(str(Calculation_voltage(data[0], 0)))
 
-    window.sensor_2.setText(str(Calculation_pressure(data[1], 1)))
-    window.sensor_21.setText(str(Calculation_voltage(data[1], 1)))
+        window.sensor_2.setText(str(Calculation_pressure(data[1], 1)))
+        window.sensor_21.setText(str(Calculation_voltage(data[1], 1)))
 
-    window.sensor_3.setText(str(Calculation_pressure(data[2], 2)))
-    window.sensor_31.setText(str(Calculation_voltage(data[2], 2)))
-
+        window.sensor_3.setText(str(Calculation_pressure(data[2], 2)))
+        window.sensor_31.setText(str(Calculation_voltage(data[2], 2)))
+    except Exception as exc:
+        print(exc)
 
 window.openB.clicked.connect(Open_port)
 window.closeB.clicked.connect(Close_port)
