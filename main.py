@@ -1,7 +1,10 @@
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt6.QtCore import QIODeviceBase
-
+from pyqtgraph import PlotWidget
+import pyqtgraph as pg
+import sys
+import numpy as np
 
 app = QtWidgets.QApplication([])
 window = uic.loadUi('untitled.ui')
@@ -13,7 +16,18 @@ for port in ports:
     portlist.append(port.portName())
 window.comL.addItems(portlist)
 
+
+#window.graph.setBackground('w')
+
 chanell_list = [[True, 102], [True, 102], [True, 102]]
+
+list_graf_x = []
+for i in range(100):
+    list_graf_x.append(i)
+list_graf_y = []
+for i in range(100):
+    list_graf_y.append(0)
+
 
 def Calibration():
     global data_save
@@ -66,6 +80,8 @@ def Close_port():
         window.label_.setText(serial.error())
 
 def Read_():
+    global list_graf_x
+    global list_graf_y
     try:
         global data_save
         line_ = str(serial.readLine(), 'utf-8')
@@ -81,6 +97,15 @@ def Read_():
         window.sensor_31.setText(str(Calculation_voltage(data[2], 2)))
     except Exception as exc:
         print(exc)
+
+
+    list_graf_y.append(Calculation_pressure(data[0], 0))
+    list_graf_y.pop(0)
+    window.graph.clear()
+    pen = pg.mkPen(color=(255, 0, 0))
+    window.graph.plot(list_graf_x, list_graf_y, pen = pen)
+    window.graph.plot([0,1,2,3,4,5,6,7,8,9,10,11,12], [0,1,2,3,4,5,6,7,8,9,10,11,12])
+
 
 window.openB.clicked.connect(Open_port)
 window.closeB.clicked.connect(Close_port)
